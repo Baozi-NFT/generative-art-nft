@@ -68,14 +68,14 @@ CONFIG = [
         'name': 'Mouth',
         'directory': 'Mouth',
         'required': True,
-        'rarity_weights': [111, 444, 444, 356, 622, 444, 178, 622, 622, 1978, 178, 111, 356, 178],
+        'rarity_weights': [111, 444, 444, 356, 622, 444, 178, 622, 356, 2156, 178, 111, 444, 178],
     },
     {
         'id': 8,
         'name': 'Eye Accessories',
         'directory': 'Eye Accessories',
         'required': False,
-        'rarity_weights': [6488, 444, 444, 178, 444, 133, 444],
+        'rarity_weights': [6840, 356, 356, 178, 356, 133, 356],
     },
     {
         'id': 9,

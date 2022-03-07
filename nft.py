@@ -99,7 +99,13 @@ def get_total_combinations():
     
     total = 1
     for layer in CONFIG:
-        total = total * len(layer['traits'])
+        trait = layer['name']
+        
+        if trait == "Body":
+            # Skip Body since Head will capture the combinations as "Skins" already
+            continue
+        else:
+            total = total * len(layer['traits'])
     return total
 
 
@@ -118,12 +124,13 @@ def select_index(cum_rarities, rand):
 # Generate a set of traits given rarities
 def generate_trait_set_from_config():
     
+    skin = ""
     trait_set = []
     trait_paths = []
     
     for layer in CONFIG:
         # Extract list of traits and cumulative rarity weights
-        traits, cum_rarities = layer['traits'], layer['cum_rarity_weights']
+        trait, traits, cum_rarities = layer['name'], layer['traits'], layer['cum_rarity_weights']
 
         # Generate a random number
         rand_num = random.random()
@@ -131,13 +138,23 @@ def generate_trait_set_from_config():
         # Select an element index based on random number and cumulative rarity weights
         idx = select_index(cum_rarities, rand_num)
 
+        if trait == "Body": 
+            skin = traits[idx]
+
         # Add selected trait to trait set
-        trait_set.append(traits[idx])
+        if trait == "Head":
+            trait_set.append(skin)
+        else: 
+            trait_set.append(traits[idx])
 
         # Add trait path to trait paths if the trait has been selected
         if traits[idx] is not None:
-            trait_path = os.path.join(layer['directory'], traits[idx])
-            trait_paths.append(trait_path)
+            if trait == "Head":
+                trait_path = os.path.join(layer['directory'], skin)
+                trait_paths.append(trait_path)
+            else:
+                trait_path = os.path.join(layer['directory'], traits[idx])
+                trait_paths.append(trait_path)
         
     return trait_set, trait_paths
 
@@ -227,6 +244,14 @@ def main():
 
     print("Starting task...")
     rt = generate_images(edition_name, num_avatars)
+    rt['skin'] = ""
+    for index, row in rt.iterrows(): 
+        if row['Head'] != row['Body']:
+            row['skin'] = "#ERROR"
+        else:
+            row['skin'] = row['Body']
+    rt = rt.drop('Head', 1)
+    rt = rt.drop('Body', 1)
 
     print("Saving metadata...")
     rt.to_csv(os.path.join('output', 'edition ' + str(edition_name), 'metadata.csv'))

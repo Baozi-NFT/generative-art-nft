@@ -125,6 +125,7 @@ def select_index(cum_rarities, rand):
 def generate_trait_set_from_config():
     
     skin = ""
+    hasGlasses = False
     trait_set = []
     trait_paths = []
     
@@ -138,12 +139,23 @@ def generate_trait_set_from_config():
         # Select an element index based on random number and cumulative rarity weights
         idx = select_index(cum_rarities, rand_num)
 
+        # If we are currently on the body layer, keep track of the body type and set it as "skin"
         if trait == "Body": 
             skin = traits[idx]
 
-        # Add selected trait to trait set
+        if trait == "Eye Accessories":
+            if traits[idx] is not None and ("Aviator Glasses" in traits[idx] or "Aviator Sunglasses" in traits[idx] or "Glasses" in traits[idx] or "Sunglasses" in traits[idx]):
+                hasGlasses = True
+
+         # Depending on the layer we are working on, set the appropriate trait
         if trait == "Head":
             trait_set.append(skin)
+        elif trait == "Head Accessories" and hasGlasses:
+            if traits[idx] is not None and ("Headphone" in traits[idx] or "Bucket Hat" in traits[idx] or "Visor" in traits[idx] or "Rice Paddy Hat" in traits[idx] or "Devil" in traits[idx]):
+                trait_set.append(None)
+                traits[idx] = None
+            else:
+                trait_set.append(traits[idx])
         else: 
             trait_set.append(traits[idx])
 
